@@ -6,82 +6,56 @@ const axios = require("axios");
 const puppeteer = require("puppeteer");
 var fs = require("fs");
 /* GET home page. */
-
-function trimSpaces(s){
-    s = s.replace(/(^\s*)|(\s*$)/gi,"");
-    s = s.replace(/[ ]{2,}/gi," ");
-    s = s.replace(/\n /,"\n");
-}
-
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
+
 
 router.get('/pup',(req,res)=>{
    var u = req.body.url;
 
     (async () => {
-        const browser = await puppeteer.launch({ headless: true, defaultViewport: { width: 1920, height: 1080 }, args: ['--start-maximized']  });
-        const page = await browser.newPage();
-        let element, formElement, tabs;
-
-        await page.goto(`https://www.amazon.in/dp/B07DJD1RTM?pf_rd_p=fa25496c-7d42-4f20-a958-cce32020b23e&pf_rd_r=ZNWM80VTGQVV7NXTGZT1`, { waitUntil: 'networkidle0' });
-
-        element = await page.$x(`//*[@id="title"]`);
-        // await element[0].click();
-
-        console.log(element[0].text);
-        // await page.waitForNavigation();
-        await browser.close();
-    })();
-    //
-    // (async () => {
-    //     try {
-    //         // open the headless browser
-    //         const browser = await puppeteer.launch({ headless: true });
-    //         // open a new page
-    //         const page = await browser.newPage();
-    //         // enter url in page
-    //         await page.goto(u);
-    //
-    //         // await page.waitForSelector("a.storylink");
-    //
-    //         var news = await page.evaluate(() => {
-    //
-    //
-
-                // var titleNodeList = document.querySelectorAll(`a.storylink`);
-                // var ageList = document.querySelectorAll(`span.age`);
-                // var scoreList = document.querySelectorAll(`span.score`);
-                // var titleLinkArray = [];
-                // for (var i = 0; i < titleNodeList.length; i++) {
-                //     titleLinkArray[i] = {
-                //         title: titleNodeList[i].innerText.trim(),
-                //         link: titleNodeList[i].getAttribute("href"),
-                //         age: ageList[i].innerText.trim(),
-                //         score: scoreList[i].innerText.trim()
-                //     };
+        try {
+            const browser = await puppeteer.launch({headless: true});
+            console.log("Browser Opened");
+            const page = await browser.newPage();
+            console.log("Browser Opened Page Opened");
+            await page.goto(u);
+            // await page.goto(`https://www.amazon.in/dp/B07DJD1RTM?pf_rd_p=fa25496c-7d42-4f20-a958-cce32020b23e&pf_rd_r=ZNWM80VTGQVV7NXTGZT1`);
+            console.log("Browser gone to page");
+            // var element = await page.$x(`//*[@id="title"]`);
+            // console.log("This is Brought",element);
+            const output = await page.evaluate(() => {
+                var tPro = document.querySelectorAll("#productTitle");
+                // var l = page.$x('//*[@id="reviewsMedley"]/div/div[1]/div[2]/div[2]/span', span.a-size-base.a-color-secondary);
+                // var ttotal = document.querySelectorAll('table#reviewsMedley');
+                var ttotal = document.querySelectorAll('#histogramTable');
+                var rCount = document.querySelectorAll('#acrCustomerReviewText');
+                console.log(tPro);
+                var productsArray = {
+                    "title": tPro[0].innerText,//.trim(),
+                    "totalReview":ttotal[1].innerText,
+                    "count":rCount[0].innerText
+                };
+                // for (let i=0; i<ttotal.length; i++){
+                //     productsArray.totalReview[i]= ttotal[i].innerText;
+                //         //{// nameOfProduct:tPro[i].innerText.trim(),totalReview:ttotal[i].innerText};
                 // }
-                // return titleLinkArray;
-            // });
-            // console.log(news);
-            // await browser.close();
-            // Writing the news inside a json file
-            // fs.writeFile("hackernews.json", JSON.stringify(news), function(err) {
-            //     if (err) throw err;
-            //     console.log("Saved!");
-            // });
-    //         console.log(success("Browser Closed"));
-    //     } catch (err) {
-    //         // Catch and display errors
-    //         console.log(error(err));
-    //         await browser.close();
-    //         console.log(error("Browser Closed"));
-    //     }
-    // })();
-    res.send("aSDA");
+                console.log(productsArray);
+                return productsArray;
+            });
+            await browser.close();
+            console.log("browser Closed Successfully");
+            console.log(output)
+            res.send(output)
+        }catch (e) {
+            console.log(e)
+        }})();
+    // res.send("aSDA");
 
 });
+
+// *****************************************************
 
 router.get('/url',(req,res)=> {
   var url = req.body.url;
@@ -109,32 +83,42 @@ router.get('/url',(req,res)=> {
 
         }
       }, (error) => console.log(error) );
-  //
-  // axios.get(url)
-  //     .then((retrived)=>{
-  //       if(response.status === 200) {
-  //         const html = response.data;
-  //         const $ = cheerio.load(html);
-  //         console.log($,"Success");
-  //         // console.log(retrived);
-  //       }
-  //     })
-  //     .catch((error)=>{
-  //       console.log(error);
-  //     });
-
-  // request(url, function (error, response, html) {
-  //   if (!error) {
-  //     var $ = cheerio.load(html);
-  //     console.log($)
-  //     // var title, release, rating;
-  //     // var json = { title : "", release : "", rating : ""};
-  //   } else {
-  //     console.log(error.code, error.message);
-  //   }
-  //   console.log(url);
     res.send("Go back");
-  // });
+
 });
+
+
+router.get('/asd',(req,res)=>{
+    const puppeteer = require('puppeteer');
+
+    (async () => {
+        const browser = await puppeteer.launch({ headless: true});
+        const page = await browser.newPage();
+        let element, formElement, tabs;
+
+        await page.goto(`https://www.amazon.in/dp/B07HGH82LT/ref=psdc_1805560031_t1_B07DJD1RTM`, { waitUntil: 'networkidle0' });
+
+        var comPage = await page.evaluate(
+            element = await page.$x(`//*[@id="productTitle"]/text()`));
+        return element
+
+        console.log(comPage);
+
+        // await element[0].click();
+
+        // element = await page.$x(`(.//*[normalize-space(text()) and normalize-space(.)='Customer reviews'])[1]/following::div[7]`);
+        // await element[0].click();
+
+        // element = await page.$x(`(.//*[normalize-space(text()) and normalize-space(.)='See more answered questions (989)'])[1]/following::h2[1]`);
+        // await element[0].click();
+
+        // element = await page.$x(`(.//*[normalize-space(text()) and normalize-space(.)='Customer reviews'])[1]/following::div[7]`);
+        // await element[0].click();
+        await browser.close();
+    })(), ()=>{
+        res.send("sadasdf")
+    };
+});
+
 
 module.exports = router;
