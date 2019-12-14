@@ -1,0 +1,22 @@
+const puppeteer = require('puppeteer');
+
+(async () => {
+    const browser = await puppeteer.launch({ headless: false, defaultViewport: { width: 1920, height: 1080 }, args: ['--start-maximized'] });
+    const page = await browser.newPage();
+    let element, formElement, tabs;
+
+    await page.goto(`https://www.amazon.in/dp/B07HGH82LT/ref=psdc_1805560031_t1_B07DJD1RTM`, { waitUntil: 'networkidle0' });
+
+	element = await page.$x(`//*[@id="ppd"]`);
+	await element[0].click();
+
+	element = await page.$x(`(.//*[normalize-space(text()) and normalize-space(.)='Customer reviews'])[1]/following::div[7]`);
+	await element[0].click();
+
+	element = await page.$x(`(.//*[normalize-space(text()) and normalize-space(.)='See more answered questions (989)'])[1]/following::h2[1]`);
+	await element[0].click();
+
+	element = await page.$x(`(.//*[normalize-space(text()) and normalize-space(.)='Customer reviews'])[1]/following::div[7]`);
+	await element[0].click();
+    await browser.close();
+})();
